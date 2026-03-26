@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route, useLocation } from "react-route
 import { AnimatePresence } from "framer-motion";
 import { useState, useEffect } from "react";
 
+import { Navigate } from "react-router-dom";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import DashboardLayout from "./pages/DashboardLayout";
@@ -10,6 +11,7 @@ import FocusPage from "./pages/FocusPage";
 import TablePage from "./pages/TablePage";
 
 import Navbar from "./components/Navbar";
+import ProtectedRoute from "./components/ProtectedRoute";
 import { TimerProvider } from "./context/TimerContext";
 
 function AnimatedRoutes() {
@@ -28,9 +30,22 @@ function AnimatedRoutes() {
       {showNavbar && <Navbar />}
       <AnimatePresence mode="wait">
         <Routes location={location} key={location.pathname}>
-          <Route path="/" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/dashboard" element={<DashboardLayout />}>
+          <Route
+            path="/"
+            element={isLoggedIn ? <Navigate to="/dashboard" replace /> : <Login />}
+          />
+          <Route
+            path="/register"
+            element={isLoggedIn ? <Navigate to="/dashboard" replace /> : <Register />}
+          />
+          <Route
+            path="/dashboard"
+            element={
+              <ProtectedRoute>
+                <DashboardLayout />
+              </ProtectedRoute>
+            }
+          >
             <Route index element={<HabitsPage />} />
             <Route path="habits" element={<HabitsPage />} />
             <Route path="focus" element={<FocusPage />} />
