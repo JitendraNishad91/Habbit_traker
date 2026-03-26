@@ -13,13 +13,6 @@ export function TimerProvider({ children }) {
   const [habits, setHabits] = useState([]);
   
   const intervalRef = useRef(null);
-  const selectedHabitRef = useRef(null);
-  const selectedMinutesRef = useRef(null);
-
-  useEffect(() => {
-    selectedHabitRef.current = selectedHabit;
-    selectedMinutesRef.current = selectedMinutes;
-  }, [selectedHabit, selectedMinutes]);
 
   const loadHabits = useCallback(async () => {
     const userId = localStorage.getItem("userId");
@@ -47,7 +40,7 @@ export function TimerProvider({ children }) {
     setSeconds(mins * 60);
   };
 
-  const handleComplete = useCallback(async (habit, minutes) => {
+  const handleComplete = useCallback(async (habit, minutes, logsFn, habitsFn) => {
     setIsRunning(false);
     setIsPaused(false);
 
@@ -59,8 +52,8 @@ export function TimerProvider({ children }) {
           timeSpent: (minutes || 0) * 60,
           date: today
         });
-        await loadFocusLogs();
-        await loadHabits();
+        await logsFn();
+        await habitsFn();
       } catch (error) {
         console.error("Error saving focus time:", error);
       }
@@ -73,7 +66,7 @@ export function TimerProvider({ children }) {
       setSelectedMinutes(null);
       setSelectedHabit(null);
     }, 100);
-  }, [loadFocusLogs, loadHabits]);
+  }, []);
 
   const startTimer = useCallback(() => {
     if (!selectedHabit) {
@@ -92,13 +85,13 @@ export function TimerProvider({ children }) {
         if (prev <= 1) {
           clearInterval(intervalRef.current);
           intervalRef.current = null;
-          handleComplete(selectedHabitRef.current, selectedMinutesRef.current);
+          handleComplete(selectedHabit, selectedMinutes, loadFocusLogs, loadHabits);
           return 0;
         }
         return prev - 1;
       });
     }, 1000);
-  }, [handleComplete]);
+  }, [selectedHabit, selectedMinutes, handleComplete, loadFocusLogs, loadHabits]);
 
   const pauseTimer = useCallback(() => {
     if (intervalRef.current) {
@@ -118,13 +111,13 @@ export function TimerProvider({ children }) {
         if (prev <= 1) {
           clearInterval(intervalRef.current);
           intervalRef.current = null;
-          handleComplete(selectedHabitRef.current, selectedMinutesRef.current);
+          handleComplete(selectedHabit, selectedMinutes, loadFocusLogs, loadHabits);
           return 0;
         }
         return prev - 1;
       });
     }, 1000);
-  }, [handleComplete]);
+  }, [selectedHabit, selectedMinutes, handleComplete, loadFocusLogs, loadHabits]);
 
   const stopTimer = useCallback(async () => {
     if (intervalRef.current) {

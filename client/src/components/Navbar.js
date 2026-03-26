@@ -38,13 +38,13 @@ function Navbar() {
     setMounted(true);
 
     const handleStorageChange = () => {
-      const userId = localStorage.getItem("userId");
-      setIsLoggedIn(!!userId);
+      const newUserId = localStorage.getItem("userId");
+      setIsLoggedIn(!!newUserId);
     };
 
     window.addEventListener("storage", handleStorageChange);
     return () => window.removeEventListener("storage", handleStorageChange);
-  }, []);
+  }, [userId]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
