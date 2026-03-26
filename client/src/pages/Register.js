@@ -22,19 +22,34 @@ const buttonVariants = {
   initial: { scale: 1, y: 0, boxShadow: "0 4px 20px rgba(34, 197, 94, 0.4)" }
 };
 
+const getRandomSeed = () => Math.random().toString(36).substring(7);
+
 function Register(){
 
 const [name,setName] = useState("");
 const [email,setEmail] = useState("");
 const [password,setPassword] = useState("");
+const [confirmPassword,setConfirmPassword] = useState("");
 const [gender,setGender] = useState("");
 const [showPassword,setShowPassword] = useState(false);
+const [showConfirmPassword,setShowConfirmPassword] = useState(false);
 const [error,setError] = useState("");
 const [loading,setLoading] = useState(false);
+
+const [maleSeed] = useState(getRandomSeed);
+const [femaleSeed] = useState(getRandomSeed);
 
 const register = async () => {
     if(!name || !email || !password || !gender){
         setError("Please fill all fields including gender");
+        return;
+    }
+    if(password !== confirmPassword){
+        setError("Passwords do not match!");
+        return;
+    }
+    if(password.length < 6){
+        setError("Password must be at least 6 characters");
         return;
     }
     setLoading(true);
@@ -58,7 +73,7 @@ const register = async () => {
     setLoading(false);
 };
 
-return(
+ return(
 
 <motion.div 
     initial="initial" 
@@ -226,7 +241,7 @@ return(
                     }}
                 >
                     <img 
-                        src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${name || 'male'}&backgroundColor=0a1628&clothingColor=3b82f6`}
+                        src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${maleSeed}&backgroundColor=0a1628&clothingColor=3b82f6`}
                         alt="Male Avatar" 
                         style={{width: '80px', height: '80px', margin: '0 auto 8px auto', display: 'block'}} 
                     />
@@ -246,7 +261,7 @@ return(
                     }}
                 >
                     <img 
-                        src={`https://api.dicebear.com/7.x/lorelei/svg?seed=${name || 'female'}&backgroundColor=0a1628`}
+                        src={`https://api.dicebear.com/7.x/lorelei/svg?seed=${femaleSeed}&backgroundColor=0a1628`}
                         alt="Female Avatar" 
                         style={{width: '80px', height: '80px', margin: '0 auto 8px auto', display: 'block'}} 
                     />
@@ -285,7 +300,7 @@ return(
             />
         </div>
 
-        <div style={{position: 'relative', marginBottom: '28px'}}>
+        <div style={{position: 'relative', marginBottom: '16px'}}>
             <input
                 type={showPassword ? "text" : "password"}
                 placeholder="🔐 Password"
@@ -294,7 +309,6 @@ return(
                 style={{
                     width: '100%', 
                     padding: '16px 50px 16px 20px', 
-                    marginBottom: '20px', 
                     borderRadius: '12px', 
                     border: '2px solid rgba(34, 197, 94, 0.3)',
                     background: 'rgba(10, 22, 40, 0.8)',
@@ -319,7 +333,7 @@ return(
                 style={{
                     position: 'absolute', 
                     right: '16px', 
-                    top: '50%', 
+                    top: '20%', 
                     transform: 'translateY(-50%)', 
                     background: 'none', 
                     border: 'none', 
@@ -338,6 +352,63 @@ return(
             >
                 {showPassword ? "👁️" : "👁️‍🗨️"}
             </button>
+        </div>
+
+        <div style={{position: 'relative', marginBottom: '28px'}}>
+            <input
+                type={showConfirmPassword ? "text" : "password"}
+                placeholder="🔐 Confirm Password"
+                value={confirmPassword}
+                onChange={(e)=>setConfirmPassword(e.target.value)}
+                style={{
+                    width: '100%', 
+                    padding: '16px 50px 16px 20px', 
+                    borderRadius: '12px', 
+                    border: confirmPassword && password !== confirmPassword ? '2px solid rgba(239, 68, 68, 0.8)' : '2px solid rgba(34, 197, 94, 0.3)',
+                    background: 'rgba(10, 22, 40, 0.8)',
+                    color: '#fff',
+                    fontSize: '16px',
+                    fontWeight: '500',
+                    transition: 'all 0.3s ease',
+                    boxSizing: 'border-box'
+                }}
+                onFocus={(e) => {
+                    e.target.style.borderColor = 'rgba(34, 197, 94, 0.8)';
+                    e.target.style.boxShadow = '0 0 0 3px rgba(34, 197, 94, 0.2)';
+                }}
+                onBlur={(e) => {
+                    e.target.style.borderColor = confirmPassword && password !== confirmPassword ? 'rgba(239, 68, 68, 0.8)' : 'rgba(34, 197, 94, 0.3)';
+                    e.target.style.boxShadow = 'none';
+                }}
+            />
+            <button
+                type="button"
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                style={{
+                    position: 'absolute', 
+                    right: '16px', 
+                    top: '20%', 
+                    transform: 'translateY(-50%)', 
+                    background: 'none', 
+                    border: 'none', 
+                    cursor: 'pointer', 
+                    color: 'rgba(96, 165, 250, 0.7)',
+                    padding: '0',
+                    fontSize: '20px',
+                    transition: 'all 0.3s ease'
+                }}
+                onMouseEnter={(e) => {
+                    e.target.style.color = '#fff';
+                }}
+                onMouseLeave={(e) => {
+                    e.target.style.color = 'rgba(96, 165, 250, 0.7)';
+                }}
+            >
+                {showConfirmPassword ? "👁️" : "👁️‍🗨️"}
+            </button>
+            {confirmPassword && password === confirmPassword && (
+                <span style={{position: 'absolute', right: '50px', top: '50%', transform: 'translateY(-50%)', color: '#22c55e', fontSize: '16px'}}>✓</span>
+            )}
         </div>
 
         <motion.button 
@@ -414,7 +485,6 @@ return(
 </motion.div>
 
 );
-
 }
 
 export default Register;
