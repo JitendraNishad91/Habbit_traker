@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import { motion } from "framer-motion";
 import { useTimer } from "../context/TimerContext";
@@ -38,26 +38,26 @@ function HabitsPage() {
   const today = new Date().toISOString().split('T')[0];
   const userId = localStorage.getItem("userId");
 
-  const fetchHabits = async () => {
+  const fetchHabits = useCallback(async () => {
     try {
       const res = await axios.get("http://localhost:5000/api/habits/all/" + userId);
       setHabits(res.data);
     } catch (error) {
       console.error("Failed to fetch habits:", error);
     }
-  };
+  }, [userId]);
 
   useEffect(() => {
     if (userId) {
       fetchHabits();
     }
-  }, [userId]);
+  }, [userId, fetchHabits]);
 
   useEffect(() => {
     if (focusLogs.length > 0) {
       fetchHabits();
     }
-  }, [focusLogs]);
+  }, [focusLogs, fetchHabits]);
 
   const createHabit = async () => {
     if (!title) return;

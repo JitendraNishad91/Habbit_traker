@@ -1,6 +1,5 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import axios from "axios";
-import { motion } from "framer-motion";
 import { useTimer } from "../context/TimerContext";
 
 function TablePage() {
@@ -10,27 +9,26 @@ function TablePage() {
   const [selectedThreshold, setSelectedThreshold] = useState(null);
   const { focusLogs, loadHabits: loadHabitsFromContext } = useTimer();
 
-  const today = new Date().toISOString().split('T')[0];
   const userId = localStorage.getItem("userId");
 
-  const loadHabits = async () => {
+  const loadHabits = useCallback(async () => {
     const res = await axios.get(
       "http://localhost:5000/api/habits/all/" + userId
     );
     setHabits(res.data);
-  };
+  }, [userId]);
 
   useEffect(() => {
     loadHabits();
     loadHabitsFromContext();
-  }, []);
+  }, [loadHabits, loadHabitsFromContext]);
 
   useEffect(() => {
     if (focusLogs.length > 0) {
       loadHabits();
       loadHabitsFromContext();
     }
-  }, [focusLogs]);
+  }, [focusLogs, loadHabits, loadHabitsFromContext]);
 
   const getDaysInMonth = (date) => {
     const year = date.getFullYear();

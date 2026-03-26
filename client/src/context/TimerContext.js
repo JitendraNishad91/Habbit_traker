@@ -13,6 +13,13 @@ export function TimerProvider({ children }) {
   const [habits, setHabits] = useState([]);
   
   const intervalRef = useRef(null);
+  const selectedHabitRef = useRef(null);
+  const selectedMinutesRef = useRef(null);
+
+  useEffect(() => {
+    selectedHabitRef.current = selectedHabit;
+    selectedMinutesRef.current = selectedMinutes;
+  }, [selectedHabit, selectedMinutes]);
 
   const loadHabits = useCallback(async () => {
     const userId = localStorage.getItem("userId");
@@ -40,58 +47,7 @@ export function TimerProvider({ children }) {
     setSeconds(mins * 60);
   };
 
-  const startTimer = useCallback(() => {
-    if (!selectedHabit) {
-      alert("Please select a task first!");
-      return;
-    }
-    if (!selectedMinutes) {
-      alert("Please select focus duration first!");
-      return;
-    }
-
-    setIsRunning(true);
-
-    intervalRef.current = setInterval(() => {
-      setSeconds(prev => {
-        if (prev <= 1) {
-          clearInterval(intervalRef.current);
-          intervalRef.current = null;
-          handleComplete(selectedHabit, selectedMinutes);
-          return 0;
-        }
-        return prev - 1;
-      });
-    }, 1000);
-  }, [selectedHabit, selectedMinutes]);
-
-  const pauseTimer = useCallback(() => {
-    if (intervalRef.current) {
-      clearInterval(intervalRef.current);
-      intervalRef.current = null;
-    }
-    setIsRunning(false);
-    setIsPaused(true);
-  }, []);
-
-  const resumeTimer = useCallback(() => {
-    setIsRunning(true);
-    setIsPaused(false);
-
-    intervalRef.current = setInterval(() => {
-      setSeconds(prev => {
-        if (prev <= 1) {
-          clearInterval(intervalRef.current);
-          intervalRef.current = null;
-          handleComplete(selectedHabit, selectedMinutes);
-          return 0;
-        }
-        return prev - 1;
-      });
-    }, 1000);
-  }, [selectedHabit, selectedMinutes]);
-
-  const handleComplete = useCallback(async (habit = selectedHabit, minutes = selectedMinutes) => {
+  const handleComplete = useCallback(async (habit, minutes) => {
     setIsRunning(false);
     setIsPaused(false);
 
@@ -117,7 +73,58 @@ export function TimerProvider({ children }) {
       setSelectedMinutes(null);
       setSelectedHabit(null);
     }, 100);
-  }, [selectedHabit, selectedMinutes, loadFocusLogs, loadHabits]);
+  }, [loadFocusLogs, loadHabits]);
+
+  const startTimer = useCallback(() => {
+    if (!selectedHabit) {
+      alert("Please select a task first!");
+      return;
+    }
+    if (!selectedMinutes) {
+      alert("Please select focus duration first!");
+      return;
+    }
+
+    setIsRunning(true);
+
+    intervalRef.current = setInterval(() => {
+      setSeconds(prev => {
+        if (prev <= 1) {
+          clearInterval(intervalRef.current);
+          intervalRef.current = null;
+          handleComplete(selectedHabitRef.current, selectedMinutesRef.current);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+  }, [handleComplete]);
+
+  const pauseTimer = useCallback(() => {
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    }
+    setIsRunning(false);
+    setIsPaused(true);
+  }, []);
+
+  const resumeTimer = useCallback(() => {
+    setIsRunning(true);
+    setIsPaused(false);
+
+    intervalRef.current = setInterval(() => {
+      setSeconds(prev => {
+        if (prev <= 1) {
+          clearInterval(intervalRef.current);
+          intervalRef.current = null;
+          handleComplete(selectedHabitRef.current, selectedMinutesRef.current);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+  }, [handleComplete]);
 
   const stopTimer = useCallback(async () => {
     if (intervalRef.current) {
@@ -146,7 +153,7 @@ export function TimerProvider({ children }) {
     setSeconds(0);
     setSelectedMinutes(null);
     setSelectedHabit(null);
-  }, [selectedHabit, seconds, selectedMinutes, loadFocusLogs, loadHabits]);
+  }, [seconds, selectedHabit, selectedMinutes, loadFocusLogs, loadHabits]);
 
   const clearTimer = useCallback(() => {
     if (intervalRef.current) {
