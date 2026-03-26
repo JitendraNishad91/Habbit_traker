@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
+import API_URL from "../config";
 
 function Analytics() {
   const [habits, setHabits] = useState([]);
@@ -13,7 +14,7 @@ function Analytics() {
 
   const loadHabits = async () => {
     try {
-      const res = await axios.get(`http://localhost:5000/api/habits/all/${userId}`);
+      const res = await axios.get(`${API_URL}/api/habits/all/${userId}`);
       setHabits(res.data);
     } catch (error) {
       console.error("Error loading habits:", error);
@@ -47,7 +48,7 @@ function Analytics() {
     ) return;
 
     try {
-      await axios.post(`http://localhost:5000/api/habits/toggle/${habitId}`, {
+      await axios.post(`${API_URL}/api/habits/toggle/${habitId}`, {
         date: targetDate.toISOString().split("T")[0],
       });
       loadHabits();

@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import Timer from "../components/Timer";
 import { motion } from "framer-motion";
+import API_URL from "../config";
 
 const staggerContainer = {
   hidden: { opacity: 0 },
@@ -59,7 +60,7 @@ const userId = localStorage.getItem("userId");
 
 const loadHabits = async () => {
     const res = await axios.get(
-        "http://localhost:5000/api/habits/all/" + userId
+        `${API_URL}/api/habits/all/` + userId
     );
     setHabits(res.data);
 };
@@ -70,9 +71,9 @@ useEffect(()=>{
 
 const createHabit = async () => {
     if(!title || !category) return;
-    await axios.post(
-        "http://localhost:5000/api/habits/create",
-        {title,category,userId}
+await axios.post(
+        `${API_URL}/api/habits/create`,
+        {Title,category,userId}
     );
     setTitle("");
     setCategory("");
@@ -81,7 +82,7 @@ const createHabit = async () => {
 
 const toggleHabit = async (habitId) => {
     await axios.post(
-        `http://localhost:5000/api/habits/toggle/${habitId}`,
+        `${API_URL}/api/habits/toggle/${habitId}`,
         { date: today }
     );
     loadHabits();
@@ -89,7 +90,7 @@ const toggleHabit = async (habitId) => {
 
 const deleteHabit = async (habitId) => {
     await axios.delete(
-        `http://localhost:5000/api/habits/${habitId}`
+        `${API_URL}/api/habits/${habitId}`
     );
     loadHabits();
 };
@@ -151,7 +152,7 @@ const toggleHabitDate = async (habitId, day) => {
     const dateString = `${todayYear}-${String(todayMonth + 1).padStart(2, '0')}-${String(todayDate).padStart(2, '0')}`;
 
     try {
-        await axios.post(`http://localhost:5000/api/habits/toggle/${habitId}`, {
+        await axios.post(`${API_URL}/api/habits/toggle/${habitId}`, {
             date: dateString,
         });
         loadHabits();

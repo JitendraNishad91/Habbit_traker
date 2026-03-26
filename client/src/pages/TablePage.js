@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import { useTimer } from "../context/TimerContext";
+import API_URL from "../config";
 
 function TablePage() {
   const [habits, setHabits] = useState([]);
@@ -13,7 +14,7 @@ function TablePage() {
 
   const loadHabits = useCallback(async () => {
     const res = await axios.get(
-      "http://localhost:5000/api/habits/all/" + userId
+      `${API_URL}/api/habits/all/` + userId
     );
     setHabits(res.data);
   }, [userId]);
@@ -59,7 +60,7 @@ function TablePage() {
     const dateString = `${todayYear}-${String(todayMonth + 1).padStart(2, '0')}-${String(todayD).padStart(2, '0')}`;
 
     try {
-      await axios.post(`http://localhost:5000/api/habits/toggle/${habitId}`, {
+      await axios.post(`${API_URL}/api/habits/toggle/${habitId}`, {
         date: dateString,
       });
       loadHabits();

@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useRef, useCallback, useEffect } from "react";
 import axios from "axios";
+import API_URL from "../config";
 
 const TimerContext = createContext();
 
@@ -16,14 +17,14 @@ export function TimerProvider({ children }) {
 
   const loadHabits = useCallback(async () => {
     const userId = localStorage.getItem("userId");
-    const res = await axios.get("http://localhost:5000/api/habits/all/" + userId);
+    const res = await axios.get(`${API_URL}/api/habits/all/` + userId);
     setHabits(res.data);
   }, []);
 
   const loadFocusLogs = useCallback(async () => {
     try {
       const userId = localStorage.getItem("userId");
-      const res = await axios.get(`http://localhost:5000/api/habits/focus-logs/${userId}`);
+      const res = await axios.get(`${API_URL}/api/habits/focus-logs/${userId}`);
       setFocusLogs(res.data);
     } catch (error) {
       console.error("Error loading focus logs:", error);
@@ -47,7 +48,7 @@ export function TimerProvider({ children }) {
     if (habit) {
       try {
         const today = new Date().toISOString().split('T')[0];
-        await axios.post("http://localhost:5000/api/habits/focus-log", {
+        await axios.post(`${API_URL}/api/habits/focus-log`, {
           habitId: habit.id,
           timeSpent: (minutes || 0) * 60,
           date: today
@@ -129,7 +130,7 @@ export function TimerProvider({ children }) {
       try {
         const today = new Date().toISOString().split('T')[0];
         const timeSpent = (selectedMinutes * 60) - seconds;
-        await axios.post("http://localhost:5000/api/habits/focus-log", {
+        await axios.post(`${API_URL}/api/habits/focus-log`, {
           habitId: selectedHabit.id,
           timeSpent: timeSpent,
           date: today

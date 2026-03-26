@@ -2,6 +2,7 @@ import { useState } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
+import API_URL from "../config";
 
 const pageVariants = {
   initial: { opacity: 0, x: 100 },
@@ -40,7 +41,7 @@ const register = async () => {
     setError("");
     try {
         const res = await axios.post(
-            "http://localhost:5000/api/auth/register",
+            `${API_URL}/api/auth/register`,
             {name,email,password}
         );
         if(res.data.message === "alreadyregistered"){

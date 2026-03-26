@@ -3,6 +3,7 @@ import { useEffect, useState, useRef } from "react";
 import { motion } from "framer-motion";
 import { useTimer } from "../context/TimerContext";
 import axios from "axios";
+import API_URL from "../config";
 
 function Navbar() {
   const navigate = useNavigate();
@@ -69,7 +70,7 @@ function Navbar() {
     if (!query.trim()) return;
     setSubmitting(true);
     try {
-      await axios.post("http://localhost:5000/api/contact/submit", {
+      await axios.post(`${API_URL}/api/contact/submit`, {
         name: userName || "Anonymous",
         email: "jitendranishad347@gmail.com",
         query: query

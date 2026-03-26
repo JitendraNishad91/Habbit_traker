@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import { motion } from "framer-motion";
 import { useTimer } from "../context/TimerContext";
+import API_URL from "../config";
 
 const staggerContainer = {
   hidden: { opacity: 0 },
@@ -40,7 +41,7 @@ function HabitsPage() {
 
   const fetchHabits = useCallback(async () => {
     try {
-      const res = await axios.get("http://localhost:5000/api/habits/all/" + userId);
+      const res = await axios.get(`${API_URL}/api/habits/all/` + userId);
       setHabits(res.data);
     } catch (error) {
       console.error("Failed to fetch habits:", error);
@@ -61,7 +62,7 @@ function HabitsPage() {
 
   const createHabit = async () => {
     if (!title) return;
-    await axios.post("http://localhost:5000/api/habits/create", { title, description: category, userId });
+    await axios.post(`${API_URL}/api/habits/create`, { title, description: category, userId });
     setTitle("");
     setCategory("");
     fetchHabits();
@@ -69,13 +70,13 @@ function HabitsPage() {
   };
 
   const toggleHabit = async (habitId) => {
-    await axios.post(`http://localhost:5000/api/habits/toggle/${habitId}`, { date: today });
+    await axios.post(`${API_URL}/api/habits/toggle/${habitId}`, { date: today });
     fetchHabits();
     loadHabits();
   };
 
   const deleteHabit = async (habitId) => {
-    await axios.delete(`http://localhost:5000/api/habits/${habitId}`);
+    await axios.delete(`${API_URL}/api/habits/${habitId}`);
     fetchHabits();
     loadHabits();
   };
